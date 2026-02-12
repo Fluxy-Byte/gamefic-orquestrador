@@ -7,7 +7,7 @@ import { startTaskWorkerVendas } from './src/services/workes/task.worker.vendas'
 import { connectMongo } from './src/infra/dataBase/messages';
 import { createOrganization } from './src/infra/dataBase/organization'
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5304;
 
 async function start() {
   try {
