@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+model Contato {
+  id                      Int       @id @default(autoincrement())
+  email                   String?
+  name                    String?
+  phone                   String    @unique
+  start_date_conversation DateTime  @default(now())
+  last_date_conversation  DateTime? @default(now())
+  objetivoLead            String?
+
+  id_waba                 Int
+  waba                    Waba      @relation(fields: [id_waba], references: [id_waba])
+}
+
+model Waba {
+  id_waba              Int      @id @default(autoincrement())
+  phone_number_id      String   @unique
+  display_phone_number String   @unique
+
+  id_organization      Int      @default(1)
+  organization         Organization @relation(fields: [id_organization], references: [id])
+
+  contatos             Contato[]
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  password       String
+  role           Role     @default(MEMBER)
+  organizationId Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization          Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sessions              Session[]
+  doubts                Doubt[]
+  sales                 Sale[]
+
+  @@index([organizationId])
+  @@index([email])
+}
+
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users                 User[]
+  doubts                Doubt[]
+  sales                 Sale[]
+  wabas                 Waba[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Doubt {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  organizationId Int
+  message        String   @db.Text
+  resolved       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([organizationId])
+}
+
+model Sale {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  organizationId Int
+  amount         Float
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([createdAt])
+}

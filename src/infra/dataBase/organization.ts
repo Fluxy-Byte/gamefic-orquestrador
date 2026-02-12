@@ -1,0 +1,29 @@
+import { prisma } from '../../lib/prisma'
+
+export interface InterfaceWaba {
+    id_waba: number;
+    phone_number_id: string;
+    display_phone_number: string;
+    organization?: number[];
+}
+
+
+export async function createOrganization() {
+    const organizacao = await prisma.organization.findFirst(
+        {
+            where: {
+                name: "Administrador"
+            }
+        }
+    )
+
+    if (!organizacao) {
+        return await prisma.organization.create({
+            data: {
+                name: "Administrador"
+            }
+        })
+    }
+
+    return organizacao;
+}

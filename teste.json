@@ -1,0 +1,39 @@
+{
+    "object": "whatsapp_business_account",
+    "entry": [
+        {
+            "id": "1392564998984749",
+            "changes": [
+                {
+                    "value": {
+                        "messaging_product": "whatsapp",
+                        "metadata": {
+                            "display_phone_number": "553491713923",
+                            "phone_number_id": "872884792582393"
+                        },
+                        "contacts": [
+                            {
+                                "profile": {
+                                    "name": "Gabriel Lopes"
+                                },
+                                "wa_id": "553497801829"
+                            }
+                        ],
+                        "messages": [
+                            {
+                                "from": "553497801829",
+                                "id": "wamid.HBgMNTUzNDk3ODAxODI5FQIAEhgWM0VCMEJDQTQ1NjMyNjU1QkUxNUQwMAA=",
+                                "timestamp": "1770847575",
+                                "text": {
+                                    "body": "Ola"
+                                },
+                                "type": "text"
+                            }
+                        ]
+                    },
+                    "field": "messages"
+                }
+            ]
+        }
+    ]
+}
