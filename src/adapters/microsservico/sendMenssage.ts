@@ -4,7 +4,7 @@ export const sendMenssagem = async (props: { mensagem: string, idMensagem: strin
     try {
 
         console.log(`Mensagem gerada pela IA: ${props.mensagem}`)
-        const url = process.env.URL_MICROSERVICE ?? "https://fluxe-microservice-message-fluxe-agente.egnehl.easypanel.host";
+        const url = process.env.URL_MICROSERVICE ?? "https://gamefic-growth.egnehl.easypanel.host";
         const responseSend = await axios.post(`${url}/send-message`,
             {
                 "mensagem": props.mensagem,

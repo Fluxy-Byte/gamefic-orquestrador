@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function getAudio(idAudio: string, MENSAGM_DEFAULT: string) {
     try {
-        const url = process.env.URL_MICROSERVICE ?? "https://fluxe-microservice-message-fluxe-agente.egnehl.easypanel.host";
+        const url = process.env.URL_MICROSERVICE ?? "https://gamefic-growth.egnehl.easypanel.host";
         const urlMicroService = `${url}/transcribe-audio`;
         const { data, status } = await axios.post(urlMicroService,
             {

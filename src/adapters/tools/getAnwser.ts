@@ -12,7 +12,7 @@ export async function getAnwser(
   try {
     // 1️⃣ Cria ou reaproveita sessão
     const resultSession = await createSession(phone);
-
+    const url_agente = process.env.URL_SDR ?? "https://gamefic-sdr.egnehl.easypanel.host"
     const sessionOk =
       resultSession.status === 200 ||
       (resultSession.status === 400 &&
@@ -25,7 +25,7 @@ export async function getAnwser(
 
     // 2️⃣ Envia mensagem para o agente
     const response = await axios.post(
-      "https://fluxe-adk-fluxy.egnehl.easypanel.host/run",
+      `${url_agente}/run`,
       {
         appName: "fluxy",
         userId: phone,
@@ -43,7 +43,7 @@ export async function getAnwser(
         headers: {
           "Content-Type": "application/json"
         },
-        validateStatus: (status) => status >= 200 && status < 500
+        validateStatus: (status: number) => status >= 200 && status < 500
       }
     );
 
@@ -76,14 +76,15 @@ export async function getAnwser(
  */
 async function createSession(phone: string) {
   try {
+    const url_agente = process.env.URL_SDR ?? "https://gamefic-sdr.egnehl.easypanel.host"
     const response = await axios.post(
-      `https://fluxe-adk-fluxy.egnehl.easypanel.host/apps/fluxy/users/${phone}/sessions/${phone}`,
+      `${url_agente}/apps/fluxy/users/${phone}/sessions/${phone}`,
       {},
       {
         headers: {
           "Content-Type": "application/json"
         },
-        validateStatus: (status) => status === 200 || status === 400
+        validateStatus: (status: number) => status === 200 || status === 400
       }
     );
 
