@@ -23,11 +23,10 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
             const metadados = dadosDaMesagen.value.metadata;
             const dadosDoBodyDaMensagem = bodyDaMenssage?.[0];
 
-            const mensagemRecebida = dadosDoBodyDaMensagem?.text?.body || false;
-            const tipoDaMensagem = dadosDoBodyDaMensagem?.type || false;
-            const idMensagem = dadosDoBodyDaMensagem?.id || false;
-            const numeroDoContato = dadosDoBodyDaMensagem?.from || false;
-
+            const tipoDaMensagem = dadosDoBodyDaMensagem?.type || false; // Tipo da mensagem: Text / Audio
+            const idMensagem = dadosDoBodyDaMensagem?.id || false; // Id da mensagem para usar na resposta
+            const numeroDoContato = dadosDoBodyDaMensagem?.from || false; // Numero do contato que esta enviando mensgem
+            const idWaba = taskMessage.id; // Id do waba para saber do numero e agente
             console.log(`Mensagem recebida do numero: ${metadados.display_phone_number} 📲`)
 
             if (idMensagem && numeroDoContato) {
@@ -37,6 +36,7 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
                         dadosDoBodyDaMensagem,
                         numeroDoContato,
                         mensagemAnswer,
+                        metadados
                     );
 
                 } else if (tipoDaMensagem === "text") {
@@ -44,6 +44,7 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
                         dadosDoBodyDaMensagem,
                         numeroDoContato,
                         mensagemAnswer,
+                        metadados
                     );
                 }
 
@@ -70,7 +71,7 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
 }
 
 
-async function tratarMensagensDeAudio(dados: Message, numeroDoContato: string, MENSAGM_DEFAULT: string) {
+async function tratarMensagensDeAudio(dados: Message, numeroDoContato: string, MENSAGM_DEFAULT: string, metadados: Metadata) {
     try {
         const urlAudio = dados.audio?.url;
         const idAudio = dados.audio?.id;
@@ -82,7 +83,7 @@ async function tratarMensagensDeAudio(dados: Message, numeroDoContato: string, M
 
             if (resultgGetAudio.status && resultgGetAudio.data) {
                 let result = resultgGetAudio.data
-                mensagem = await getAnwser(result, numeroDoContato, MENSAGM_DEFAULT);
+                mensagem = await getAnwser(result, numeroDoContato, MENSAGM_DEFAULT, metadados);
             }
 
             return mensagem
@@ -95,13 +96,13 @@ async function tratarMensagensDeAudio(dados: Message, numeroDoContato: string, M
     }
 }
 
-async function tratarMensagensDeTexto(dados: Message, numeroDoContato: string, MENSAGM_DEFAULT: string) {
+async function tratarMensagensDeTexto(dados: Message, numeroDoContato: string, MENSAGM_DEFAULT: string, metadados: Metadata) {
     try {
         let responseToUser = MENSAGM_DEFAULT;
 
         if (dados.text?.body) {
             const mensagemUser = dados.text?.body;
-            responseToUser = await getAnwser(mensagemUser, numeroDoContato, MENSAGM_DEFAULT);
+            responseToUser = await getAnwser(mensagemUser, numeroDoContato, MENSAGM_DEFAULT, metadados);
         }
 
         return responseToUser;

@@ -1,5 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { AdkInvocation } from "../interfaces/AdkInvocation";
+import { Metadata } from '../../services/interfaces/MetaWebhook';
+import { waba } from '../../infra/dataBase/waba';
 
 /**
  * Envia mensagem ao ADK e retorna a resposta em texto
@@ -7,12 +9,15 @@ import { AdkInvocation } from "../interfaces/AdkInvocation";
 export async function getAnwser(
   mensagem: string,
   phone: string,
-  MENSAGM_DEFAULT: string
+  MENSAGM_DEFAULT: string,
+  metadados: Metadata
 ): Promise<string> {
   try {
     // 1️⃣ Cria ou reaproveita sessão
-    const resultSession = await createSession(phone);
-    const url_agente = process.env.URL_SDR ?? "https://gamefic-sdr.egnehl.easypanel.host"
+    const resultSession = await createSession(phone, metadados);
+
+    const urlAgente = (await waba(metadados.phone_number_id, metadados.display_phone_number)).waba?.agent.url ?? "https://gamefic-sdr.egnehl.easypanel.host"
+
     const sessionOk =
       resultSession.status === 200 ||
       (resultSession.status === 400 &&
@@ -25,7 +30,7 @@ export async function getAnwser(
 
     // 2️⃣ Envia mensagem para o agente
     const response = await axios.post(
-      `${url_agente}/run`,
+      `${urlAgente}/run`,
       {
         appName: "fluxy",
         userId: phone,
@@ -74,11 +79,13 @@ export async function getAnwser(
 /**
  * Cria sessão no ADK (ou reutiliza se já existir)
  */
-async function createSession(phone: string) {
+async function createSession(phone: string, metadados: Metadata) {
   try {
-    const url_agente = process.env.URL_SDR ?? "https://gamefic-sdr.egnehl.easypanel.host"
+
+    const urlAgente = (await waba(metadados.phone_number_id, metadados.display_phone_number)).waba?.agent.url ?? "https://gamefic-sdr.egnehl.easypanel.host"
+    const nameAgente = (await waba(metadados.phone_number_id, metadados.display_phone_number)).waba?.agent.name ?? "gamefic"
     const response = await axios.post(
-      `${url_agente}/apps/fluxy/users/${phone}/sessions/${phone}`,
+      `${urlAgente}/apps/${nameAgente}/users/${phone}/sessions/${phone}`,
       {},
       {
         headers: {

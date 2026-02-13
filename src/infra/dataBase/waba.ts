@@ -1,27 +1,35 @@
 import { prisma } from '../../lib/prisma'
 
 
-async function verificandoExistencia(phone_number_id: string) {
+async function verificandoExistencia(phoneNumberId: string) {
     return await prisma.waba.findFirst({
         where: {
-            phoneNumberId: phone_number_id
-        }
+            phoneNumberId,
+        },
+        include: {
+            agent: true,
+        },
     })
 }
 
+
 async function criarWaba(
-    phone_number_id: string,
-    display_phone_number: string,
+    phoneNumberId: string,
+    displayPhoneNumber: string,
 ) {
     return await prisma.waba.create({
         data: {
-            phoneNumberId: phone_number_id,
-            displayPhoneNumber: display_phone_number,
+            phoneNumberId,
+            displayPhoneNumber,
             organizationId: 1,
-            agentId: 1
-        }
+            agentId: 1,
+        },
+        include: {
+            agent: true,
+        },
     })
 }
+
 
 
 export async function waba(phone_number_id: string, display_phone_number: string) {
