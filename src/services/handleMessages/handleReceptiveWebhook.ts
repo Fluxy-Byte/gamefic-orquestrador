@@ -1,21 +1,26 @@
-import { MetaWebhook } from '../interfaces/MetaWebhook';
+import { MetaWebhook, Metadata } from '../interfaces/MetaWebhook';
 import { createTaskReceptive } from "../producers/task.producer.receptive";
 import { getAudio } from "../../adapters/microsservico/getAudio";
 import type { Message } from "../interfaces/MetaWebhook";
 import { sendMenssagem } from "../../adapters/microsservico/sendMenssage";
 import { getAnwser } from "../../adapters/tools/getAnwser";
 
+interface ReseultGetAudio {
+    status: boolean,
+    data: string
+}
+
 export async function HandleReceptiveWebhook(task: MetaWebhook) {
     try {
-        console.log(JSON.stringify(task))
-        const MENSAGM_DEFAULT = process.env.MENSAGM_DEFAULT ?? "😔 Ops! Tivemos um pequeno imprevisto no momento.\nPedimos que tente novamente mais tarde.\n\n📞 Se for urgente, fale com a gente pelo número: +55 11 3164-7487\n\nA Gamefic agradece seu contato! 💙😊"
+        let mensagemAnswer = process.env.MENSAGM_DEFAULT ?? "😔 Ops! Tivemos um pequeno imprevisto no momento.\nPedimos que tente novamente mais tarde.\n\n📞 Se for urgente, fale com a gente pelo número: +55 11 3164-7487\n\nA Gamefic agradece seu contato! 💙😊"
 
-        const mensagem = task.entry[0];
-        const dadosDaMesagen = mensagem.changes[0];
+        const taskMessage = task.entry[0];
+        const dadosDaMesagen = taskMessage.changes[0];
 
         if (dadosDaMesagen.value.messages) {
 
             const bodyDaMenssage = dadosDaMesagen.value.messages;
+            const metadados = dadosDaMesagen.value.metadata;
             const dadosDoBodyDaMensagem = bodyDaMenssage?.[0];
 
             const mensagemRecebida = dadosDoBodyDaMensagem?.text?.body || false;
@@ -23,44 +28,38 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
             const idMensagem = dadosDoBodyDaMensagem?.id || false;
             const numeroDoContato = dadosDoBodyDaMensagem?.from || false;
 
-            console.log(`ID: ${idMensagem} - TYPE: ${tipoDaMensagem} - MSG: ${mensagemRecebida}`);
+            console.log(`Mensagem recebida do numero: ${metadados.display_phone_number} 📲`)
+
             if (idMensagem && numeroDoContato) {
-                let mensagem;
+
                 if (tipoDaMensagem === "audio") {
-                    mensagem = await tratarMensagensDeAudio(
+                    mensagemAnswer = await tratarMensagensDeAudio( // Converte o audio e retorna mensagem gerada pelo agente
                         dadosDoBodyDaMensagem,
-                        idMensagem,
                         numeroDoContato,
-                        MENSAGM_DEFAULT
+                        mensagemAnswer,
                     );
 
                 } else if (tipoDaMensagem === "text") {
-                    mensagem = await tratarMensagensDeTexto(
+                    mensagemAnswer = await tratarMensagensDeTexto( // Gerada mensagem pelo agente
                         dadosDoBodyDaMensagem,
-                        idMensagem,
                         numeroDoContato,
-                        MENSAGM_DEFAULT
+                        mensagemAnswer,
                     );
-                } else {
-
-                    await sendBodyToMenssage(
-                        idMensagem,
-                        numeroDoContato,
-                        MENSAGM_DEFAULT,
-                    )
-
-                    mensagem = MENSAGM_DEFAULT
                 }
+
+                await sendBodyToMenssage( // Envia para growth como mensagem normal
+                    idMensagem,
+                    numeroDoContato,
+                    mensagemAnswer,
+                    metadados.phone_number_id
+                )
 
                 await createTaskReceptive({
                     bodyTask: task,
-                    resposta: mensagem
+                    resposta: mensagemAnswer
                 });
 
-            } else {
-                console.log(`---------🔴 Mensagem inválida: ID - ${idMensagem} | FROM: ${numeroDoContato}---------`);
             }
-
             console.log('---------💚 Tratamento de mensagem concluida---------');
         }
 
@@ -71,56 +70,48 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
 }
 
 
-async function tratarMensagensDeAudio(dados: Message, idMensagem: string, numeroDoContato: string, MENSAGM_DEFAULT: string) {
+async function tratarMensagensDeAudio(dados: Message, numeroDoContato: string, MENSAGM_DEFAULT: string) {
     try {
         const urlAudio = dados.audio?.url;
         const idAudio = dados.audio?.id;
-        let mensagem: string;
+        let mensagem = MENSAGM_DEFAULT;
 
         if (urlAudio && idAudio) {
-            interface ReseultGetAudio {
-                status: boolean,
-                data: string
-            }
+
             const resultgGetAudio: ReseultGetAudio = await getAudio(idAudio, MENSAGM_DEFAULT);
 
             if (resultgGetAudio.status && resultgGetAudio.data) {
                 let result = resultgGetAudio.data
                 mensagem = await getAnwser(result, numeroDoContato, MENSAGM_DEFAULT);
-                await sendBodyToMenssage(idMensagem, numeroDoContato, mensagem);
-                return mensagem;
             }
 
-            await sendBodyToMenssage(idMensagem, numeroDoContato, MENSAGM_DEFAULT);
-            return MENSAGM_DEFAULT
+            return mensagem
+        } else {
+            return mensagem
         }
     } catch (e: any) {
         console.log("❌ Erro ao coletar mensagem de audio: " + e);
-        await sendBodyToMenssage(idMensagem, numeroDoContato, MENSAGM_DEFAULT);
         return MENSAGM_DEFAULT
     }
 }
 
-async function tratarMensagensDeTexto(dados: Message, idMensagem: string, numeroDoContato: string, MENSAGM_DEFAULT: string) {
+async function tratarMensagensDeTexto(dados: Message, numeroDoContato: string, MENSAGM_DEFAULT: string) {
     try {
-        let responseToUser;
+        let responseToUser = MENSAGM_DEFAULT;
+
         if (dados.text?.body) {
             const mensagemUser = dados.text?.body;
             responseToUser = await getAnwser(mensagemUser, numeroDoContato, MENSAGM_DEFAULT);
-        } else {
-            responseToUser = MENSAGM_DEFAULT;
         }
 
-        await sendBodyToMenssage(idMensagem, numeroDoContato, responseToUser);
         return responseToUser;
     } catch (e: any) {
         console.log("❌ Erro ao coletar mensagem de texto: " + e);
-        await sendBodyToMenssage(idMensagem, numeroDoContato, MENSAGM_DEFAULT);
         return MENSAGM_DEFAULT;
     }
 }
 
-async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, consultaResposta: string) {
+async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, consultaResposta: string, phone_number_id: string) {
     try {
 
         const listaDeRespostas = await splitText(consultaResposta);
@@ -130,7 +121,8 @@ async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, c
             await sendMenssagem({
                 mensagem,
                 idMensagem,
-                numeroDoContato
+                numeroDoContato,
+                phone_number_id
             })
 
             await new Promise(r => setTimeout(r, 20000))
@@ -140,7 +132,7 @@ async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, c
     }
 }
 
-async function splitText(text: string, limit = 3800) {
+async function splitText(text: string, limit = 2800) {
     const parts = []
     let current = ""
     for (const word of text.split(" ")) {

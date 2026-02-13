@@ -1,18 +1,7 @@
 import { prisma } from '../../lib/prisma'
 
-export interface InterfaceContato {
-    id: number;
-    email: string | null;
-    name: string | null;
-    phone: string;
-    start_date_conversation: Date;
-    last_date_conversation: Date | null;
-    objetivoLead: string | null;
-    id_waba: number;
-}
-
 async function verificandoExistencia(phone: string) {
-    return await prisma.contato.findFirst({
+    return await prisma.contact.findFirst({
         where: {
             phone
         }
@@ -20,21 +9,21 @@ async function verificandoExistencia(phone: string) {
 }
 
 async function updateDateLastMessage(phone: string) {
-    await prisma.contato.update({
+    await prisma.contact.update({
         where: {
             phone: phone
         },
         data: {
-            last_date_conversation: new Date()
+            lastDateConversation: new Date()
         }
     });
 }
 
 async function criarUsuario(phone: string, id_waba: number) {
-    return await prisma.contato.create({
+    return await prisma.contact.create({
         data: {
             phone,
-            id_waba
+            wabaId: id_waba
         }
     })
 }
@@ -66,16 +55,16 @@ export async function contato(phone: string, id_waba: number) {
 
 
 export async function getAllContacts() {
-    return await prisma.contato.findMany();
+    return await prisma.contact.findMany();
 }
 
 export async function updateContactObejtivoLead(phone: string, nome: string, objetivoLead: string) {
-    return await prisma.contato.update({
+    return await prisma.contact.update({
         where: {
             phone: phone
         },
         data: {
-            objetivoLead: objetivoLead,
+            leadGoal: objetivoLead,
             name: nome
         }
     })

@@ -3,12 +3,13 @@
 import { getConectionTheChannel } from '../../infra/rabbitMQ/conection';
 import { sendCampaing } from "../../adapters/microsservico/sendCampaing";
 import { handleHistoricoDeConversa } from "../tools/handleHistoricoDeConversa"
-import { Task, LeadRegister } from "../producers/task.producer.vendas"
+import { Task, LeadRegister } from "../../adapters/interfaces/BodySendToCampaing"
 import { updateContactObejtivoLead } from "../../infra/dataBase/contacts";
 
 export async function startTaskWorkerVendas() {
   const channel = getConectionTheChannel()
-  const nomeFila = process.env.NOME_FILA_RABBITMQ ?? "fluxy";
+  const nomeFila = process.env.NOME_FILA_RABBITMQ ?? "gamefic";
+  const phoneNumberIdWaba = process.env.PHONE_NUMBER_ID ?? "1021940604341981";
   const queue = `task.${nomeFila}.vendas.create`
   const dlq = `task.${nomeFila}.vendas.dlq`
 
@@ -26,7 +27,7 @@ export async function startTaskWorkerVendas() {
     if (!msg) return
 
     const bodyVendas: Task = JSON.parse(msg.content.toString())
-    console.log("🟠 Body recebido: " + bodyVendas)
+    console.log("🟠 Body recebido das vendas: " + bodyVendas)
 
     try {
       if (!bodyVendas.dados.telefone) {
@@ -39,122 +40,85 @@ export async function startTaskWorkerVendas() {
       const dadosLead: LeadRegister = bodyVendas.dados;
       if (bodyVendas.name_template == "lead_register") {
         bodyPayload = {
-          messaging_product: "whatsapp",
-          to: dadosLead.telefoneAgente,
-          type: "template",
+          "phone_number_id": phoneNumberIdWaba,
+          "payload": {
+            messaging_product: "whatsapp",
+            to: dadosLead.telefoneAgente,
+            type: "template",
 
-          template: {
-            name: bodyVendas.name_template,
+            template: {
+              name: bodyVendas.name_template,
 
-            language: {
-              code: "pt_BR"
-            },
-
-            components: [
-              {
-                "type": "header",
-                "parameters": [
-                  {
-                    "type": "text",
-                    "text": dadosLead.nomeAgente
-                  }
-                ]
+              language: {
+                code: "pt_BR"
               },
-              {
-                "type": "body",
-                "parameters": [
-                  {
-                    "type": "text",
-                    "text": dadosLead.nome
-                  },
-                  {
-                    "type": "text",
-                    "text": dadosLead.telefone
-                  },
-                  {
-                    "type": "text",
-                    "text": dadosLead.produto
-                  },
-                  {
-                    "type": "text",
-                    "text": dadosLead.nivelInteresse
-                  }
-                ]
-              }
 
-            ]
-          }
-        }
-      } else if (bodyVendas.name_template == "error_lead") {
-        bodyPayload = {
-          messaging_product: "whatsapp",
-          to: bodyVendas.dados.telefone,
-          type: "template",
+              components: [
+                {
+                  "type": "header",
+                  "parameters": [
+                    {
+                      "type": "text",
+                      "text": dadosLead.nomeAgente
+                    }
+                  ]
+                },
+                {
+                  "type": "body",
+                  "parameters": [
+                    {
+                      "type": "text",
+                      "text": dadosLead.nome
+                    },
+                    {
+                      "type": "text",
+                      "text": dadosLead.telefone
+                    },
+                    {
+                      "type": "text",
+                      "text": dadosLead.produto
+                    },
+                    {
+                      "type": "text",
+                      "text": dadosLead.nivelInteresse
+                    }
+                  ]
+                }
 
-          template: {
-            name: bodyVendas.name_template,
-
-            language: {
-              code: "pt_BR"
-            },
-
-            components: [
-              {
-                "type": "header",
-                "parameters": [
-                  {
-                    "type": "text",
-                    "text": dadosLead.nomeAgente
-                  }
-                ]
-              },
-              {
-                "type": "body",
-                "parameters": [
-                  {
-                    "type": "text",
-                    "text": dadosLead.nome
-                  },
-                  {
-                    "type": "text",
-                    "text": dadosLead.telefone
-                  },
-                  {
-                    "type": "text",
-                    "text": `` + (dadosLead.problema ? `O lead relatou o seguinte problema: ${dadosLead.problema} na etapa: ${dadosLead.etapa}` : "O lead não relatou um problema específico, apenas demonstrou interesse.")
-                  }
-                ]
-              }
-
-            ]
+              ]
+            }
           }
         }
       } else if (bodyVendas.name_template == "chegou_mais_um_lead") {
         const dadosLead: LeadRegister = bodyVendas.dados;
+
         bodyPayload = {
-          messaging_product: "whatsapp",
-          to: bodyVendas.dados.telefone,
-          type: "template",
+          "phone_number_id": phoneNumberIdWaba,
+          "payload": {
+            messaging_product: "whatsapp",
+            to: bodyVendas.dados.telefone,
+            type: "template",
 
-          template: {
-            name: bodyVendas.name_template,
+            template: {
+              name: bodyVendas.name_template,
 
-            language: {
-              code: "pt_BR"
-            },
+              language: {
+                code: "pt_BR"
+              },
 
-            components: [
-              {
-                "type": "body",
-                "parameters": [
-                  {
-                    "type": "text",
-                    "text": dadosLead.nome
-                  }
-                ]
-              }
+              components: [
+                {
+                  "type": "body",
+                  "parameters": [
+                    {
+                      "type": "text",
+                      "text": dadosLead.nome
+                    }
+                  ]
+                }
 
-            ]
+              ]
+            }
           }
         }
       }

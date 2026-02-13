@@ -1,30 +1,24 @@
 import { prisma } from '../../lib/prisma'
 
-export interface InterfaceWaba {
-    id_waba: number;
-    phone_number_id: string;
-    display_phone_number: string;
-    organization?: number[];
-}
-
 
 async function verificandoExistencia(phone_number_id: string) {
     return await prisma.waba.findFirst({
         where: {
-            phone_number_id
+            phoneNumberId: phone_number_id
         }
     })
 }
 
 async function criarWaba(
     phone_number_id: string,
-    display_phone_number: string
+    display_phone_number: string,
 ) {
     return await prisma.waba.create({
         data: {
-            phone_number_id,
-            display_phone_number,
-            id_organization: 1
+            phoneNumberId: phone_number_id,
+            displayPhoneNumber: display_phone_number,
+            organizationId: 1,
+            agentId: 1
         }
     })
 }

@@ -1,34 +1,14 @@
 
 import { getConectionTheChannel } from '../../infra/rabbitMQ/conection';
-
+import type { Task } from '../../adapters/interfaces/BodySendToCampaing';
 // Onde a API recebe tarefas
 
-export interface Task {
-    name_template: string,
-    dados: LeadRegister
-}
 
-
-export interface LeadRegister {
-    nome: string,
-    produto?: string,
-    nivelInteresse?: string,
-    problemaCentral?: string,
-    objetivoLead?: string,
-    tomLead?: string,
-    urgenciaLead?: string,
-    instrucao?: string,
-    telefone: string,
-    nomeAgente: string,
-    telefoneAgente: string,
-    problema?: string,
-    etapa?: string,
-}
 
 export async function createTaskVendas(task: Task) {
     try {
         console.log(task)
-        const nomeFila = process.env.NOME_FILA_RABBITMQ ?? "fluxy";
+        const nomeFila = process.env.NOME_FILA_RABBITMQ ?? "gamefic";
         const channel = await getConectionTheChannel()
         console.log(`🟠 Criou na fila vendas`);
         const queue = `task.${nomeFila}.vendas.create`

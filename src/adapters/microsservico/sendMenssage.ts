@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const sendMenssagem = async (props: { mensagem: string, idMensagem: string, numeroDoContato: string }) => {
+export const sendMenssagem = async (props: { mensagem: string, idMensagem: string, numeroDoContato: string, phone_number_id: string }) => {
     try {
 
         console.log(`Mensagem gerada pela IA: ${props.mensagem}`)
@@ -9,7 +9,8 @@ export const sendMenssagem = async (props: { mensagem: string, idMensagem: strin
             {
                 "mensagem": props.mensagem,
                 "idMensagem": props.idMensagem,
-                "numeroDoContato": props.numeroDoContato
+                "numeroDoContato": props.numeroDoContato,
+                "phone_number_id": props.phone_number_id
             }
         )
 
