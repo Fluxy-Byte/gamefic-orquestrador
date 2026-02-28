@@ -20,7 +20,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Expõe a porta do Express (mude se usar outra)
-EXPOSE 5202
+EXPOSE 5304
 
 # Inicia a aplicação
 CMD ["npm", "run", "start"] 
