@@ -1,0 +1,164 @@
+/* ===============================
+   GENERATOR
+================================ */
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+/* ===============================
+   DATASOURCE
+================================ */
+datasource db {
+  provider = "postgresql"
+}
+
+/* ===============================
+   ENUMS
+================================ */
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+/* ===============================
+   MODELS
+================================ */
+
+/* ---------- AGENT ---------- */
+model Agent {
+  id       Int     @id @default(autoincrement())
+  name     String
+  url      String
+  mensagem String?
+  organizationId   String?
+
+  wabas    Waba[]
+  logContatoComAgente LogContatoComAgente[]
+  @@map("agent")
+}
+
+/* ---------- WABA ---------- */
+model Waba {
+  id                  Int    @id @default(autoincrement())
+  phoneNumberId       String @unique
+  displayPhoneNumber  String @unique
+
+  qtdContatos         Int?   @default(0)
+  qtdConversao        Int?   @default(0)
+
+  organizationId      String
+  agentId             Int
+
+  agent    Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  campanha Campanha[]
+  contactWabas ContactWaba[]
+  logContatoComAgente LogContatoComAgente[]
+  @@map("waba")
+}
+
+model ContactWaba {
+  id        Int @id @default(autoincrement())
+  contactId Int
+  wabaId    Int
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  waba    Waba   @relation(fields: [wabaId], references: [id], onDelete: Cascade)
+
+  @@map("contact_waba")
+}
+
+/* ---------- CONTACT ---------- */
+model Contact {
+  id                     Int      @id @default(autoincrement())
+  email                  String?
+  name                   String?
+  phone                  String   @unique
+  empresa                String?
+
+  startDateConversation  DateTime @default(now())
+  lastDateConversation   DateTime?
+
+  contactWabas ContactWaba[]
+  contatosCampanha ContatosCampanha[]
+  logContatoComAgente LogContatoComAgente[]
+  reunioesContato ReunioesContato[]
+  problemasContato ProblemasContato[]
+  @@map("contact")
+}
+
+model ReunioesContato {
+  id        Int @id @default(autoincrement())
+  data_reuniao String
+  contexto_da_reuniao String
+
+  contactId Int
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
+
+model ProblemasContato  {
+  id        Int @id @default(autoincrement())
+  data_do_problema String
+  local_do_problema String
+  contexto_da_conversa String
+
+  contactId Int
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
+
+
+/* ---------- RD STATION ---------- */
+model Rdstation {
+  id            Int    @id @default(autoincrement())
+  name          String @unique
+
+  access_token  String
+  token_type    String
+  expires_in    Int
+
+  refresh_token String @unique
+  expires_at    DateTime?
+
+  @@map("rdstation")
+}
+
+
+model Campanha {
+  id            Int    @id @default(autoincrement())
+  name          String @unique
+  qtdDeContatos Int    @default(0)
+  qtdDeFalhas   Int    @default(0)
+  qtdDeEnviadas Int  @default(0)
+  dataDeEnvio   DateTime   @default(now())
+  nameTemplate  String
+  id_organizacao String
+  id_waba       Int
+
+  waba   Waba   @relation(fields: [id_waba], references: [id], onDelete: Cascade)
+  contatosCampanha ContatosCampanha[]
+}
+
+model ContatosCampanha {
+  id            Int    @id @default(autoincrement())
+  status        String @default("Enviado")
+  body_retorno  String?
+
+  id_campanha   Int
+  id_contato    Int
+
+  contact     Contact    @relation(fields: [id_contato], references: [id], onDelete: Cascade)
+  campanha    Campanha   @relation(fields: [id_campanha], references: [id], onDelete: Cascade)
+}
+
+model LogContatoComAgente {
+  id    Int    @id @default(autoincrement())
+  day   String  @unique
+  id_contato Int
+  id_agent Int
+  id_waba Int
+
+  contact     Contact    @relation(fields: [id_contato], references: [id], onDelete: Cascade)
+  waba   Waba   @relation(fields: [id_waba], references: [id], onDelete: Cascade)
+  agent Agent @relation(fields: [id_agent], references: [id], onDelete: Cascade)
+}
