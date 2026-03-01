@@ -67,7 +67,7 @@ export async function startTaskWorkerReceptive() {
                         repostaEnviada.agent,
                         repostaEnviada.client,
                         String(new Date(Number(timesTampMensagem) * 1000)),
-                        'Enviado'
+                        'enviado'
                     )
                 }
             }

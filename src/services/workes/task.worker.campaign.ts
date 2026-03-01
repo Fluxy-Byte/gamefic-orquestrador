@@ -125,7 +125,7 @@ export async function startTaskWorkerCampaign() {
         }
 
         const dados = {
-          status: result.status == 200 ? "Enviado" : "Falha",
+          status: result.status == 200 ? "enviado" : "erro",
           body_retorno: JSON.stringify(result),
           id_campanha: campaign.id,
           id_contato: user.id,
@@ -145,7 +145,7 @@ export async function startTaskWorkerCampaign() {
           bodyCampaign.payload.template_name,
           'oi',
           String(new Date()),
-          'Enviado'
+          'enviado'
         );
       }
 

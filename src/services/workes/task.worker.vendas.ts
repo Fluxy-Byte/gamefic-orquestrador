@@ -81,9 +81,8 @@ export async function startTaskWorkerVendas() {
 
       let result = await sendCampaing(bodyPayload);
       console.log("Resposta do microsserviço de envio: " + JSON.stringify(result.data));
-
+      
       if (waba) {
-
         criarHistoricoDeConversa(
           user.id,
           waba.agentId,
@@ -91,7 +90,7 @@ export async function startTaskWorkerVendas() {
           bodyVendas.nameTemplate,
           'oi',
           String(new Date()),
-          'Enviado'
+          'enviado'
         );
 
         updateNumberContactsConvertationWaba(waba.phoneNumberId);
