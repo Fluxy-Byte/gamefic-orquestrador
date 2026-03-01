@@ -41,7 +41,7 @@ export async function startTaskWorkerVendas() {
       let user = await getUserFilterWithPhone(bodyVendas.phone);
 
       if (!user) {
-        user = await createUser(bodyVendas.phone, waba.idWaba);
+        user = await createUser(bodyVendas.phone, waba?.id ?? 1);
       }
 
       let bodyPayload;
