@@ -1,8 +1,9 @@
 
 import { getConectionTheChannel } from '../../infra/rabbitMQ/conection';
-import type { Task } from '../../adapters/interfaces/Meta.interface';
+import type { DadosToSendNotification } from '../interfaces/Vendas.interface';
 
-export async function createTaskVendas(task: Task) {
+
+export async function createTaskVendas(task: DadosToSendNotification) {
     try {
         console.log(task)
         const nomeFila = process.env.NOME_FILA_RABBITMQ ?? "fluxy";

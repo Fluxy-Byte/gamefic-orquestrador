@@ -3,34 +3,11 @@
 import { getConectionTheChannel } from '../../infra/rabbitMQ/conection';
 import { sendCampaing } from "../../adapters/microsservico/sendCampaing";
 import { criarHistoricoDeConversa } from "../../infra/dataBase/messages";
-import { LeadRegister } from "../../adapters/interfaces/Meta.interface";
+import type { DadosToSendNotification } from '../interfaces/Vendas.interface';
 import { updateContact } from "../../infra/dataBase/contacts";
-import { updateNumberContactsConvertationWaba, getWabaFilterWithPhoneNumber, getWabaFilterWithId } from '../../infra/dataBase/waba';
-import { getUserFilterWithPhoneAndWabaId, createUser } from '../../infra/dataBase/contacts';
-
-export interface Task {
-  nameTemplate: string,
-  contato: UpdateContact,
-  phoneNumberId: string,
-  idWaba: number,
-  phoneNotification: string
-}
-
-interface UpdateContact {
-  email?: string;
-  name?: string;
-  phone: string;
-  empresa?: string;
-  dadosReunia?: {
-    data_reuniao: string;
-    contexto_da_reuniao: string;
-  }
-  problemasContato?: {
-    data_do_problema: string;
-    local_do_problema: string;
-    contexto_da_conversa: string;
-  }
-}
+import { updateNumberContactsConvertationWaba, getWabaFilterWithId } from '../../infra/dataBase/waba';
+import { getUserFilterWithPhone, createUser } from '../../infra/dataBase/contacts';
+import { getWabaFilterWithPhoneNumber } from '../../infra/dataBase/waba';
 
 export async function startTaskWorkerVendas() {
   const channel = getConectionTheChannel()
@@ -51,20 +28,20 @@ export async function startTaskWorkerVendas() {
   channel.consume(queue, async (msg: any) => {
     if (!msg) return
 
-    const bodyVendas: Task = JSON.parse(msg.content.toString())
+    const bodyVendas: DadosToSendNotification = JSON.parse(msg.content.toString())
     console.log("🟠 Body recebido das vendas: " + bodyVendas)
 
     try {
-      if (!bodyVendas.contato.phone) {
+      if (!bodyVendas.phone) {
         console.log('❌ Tarefa não concluida pois não tem numero para disparo');
         channel.ack(msg);
         return;
       }
-
-      let user = await getUserFilterWithPhoneAndWabaId(bodyVendas.contato.phone, bodyVendas.idWaba,);
+      const waba = await getWabaFilterWithPhoneNumber(bodyVendas.phoneNumberId);
+      let user = await getUserFilterWithPhone(bodyVendas.phone);
 
       if (!user) {
-        user = await createUser(bodyVendas.contato.phone, bodyVendas.idWaba);
+        user = await createUser(bodyVendas.phone, waba.idWaba);
       }
 
       let bodyPayload;
@@ -75,7 +52,7 @@ export async function startTaskWorkerVendas() {
           "phone_number_id": bodyVendas.phoneNumberId,
           "payload": {
             messaging_product: "whatsapp",
-            to: bodyVendas.contato.phone,
+            to: bodyVendas.phoneSquadSales,
             type: "template",
 
             template: {
@@ -91,7 +68,7 @@ export async function startTaskWorkerVendas() {
                   "parameters": [
                     {
                       "type": "text",
-                      "text": bodyVendas.contato.name
+                      "text": bodyVendas.nameTemplate
                     }
                   ]
                 }
@@ -104,8 +81,6 @@ export async function startTaskWorkerVendas() {
 
       let result = await sendCampaing(bodyPayload);
       console.log("Resposta do microsserviço de envio: " + JSON.stringify(result.data));
-
-      const waba = await getWabaFilterWithId(bodyVendas.idWaba);
 
       if (waba) {
 
@@ -121,22 +96,6 @@ export async function startTaskWorkerVendas() {
 
         updateNumberContactsConvertationWaba(waba.phoneNumberId);
       }
-
-      const dadosParaAtualizacao = {
-        name: bodyVendas.contato.name ?? "",
-        email: bodyVendas.contato.email ?? "",
-        empresa: bodyVendas.contato.empresa ?? "",
-        phone: bodyVendas.contato.phone,
-
-        data_reuniao: bodyVendas.contato.dadosReunia?.data_reuniao ?? "",
-        contexto_da_reuniao: bodyVendas.contato.dadosReunia?.contexto_da_reuniao ?? "",
-
-        data_do_problema: bodyVendas.contato.problemasContato?.data_do_problema ?? "",
-        local_do_problema: bodyVendas.contato.problemasContato?.local_do_problema ?? "",
-        contexto_da_conversa: bodyVendas.contato.problemasContato?.contexto_da_conversa ?? ""
-      }
-      
-      updateContact(dadosParaAtualizacao.phone, dadosParaAtualizacao);
 
       console.log('✅ Tarefa concluída')
       channel.ack(msg)
