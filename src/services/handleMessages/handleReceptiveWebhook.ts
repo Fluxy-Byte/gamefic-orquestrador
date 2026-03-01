@@ -59,6 +59,8 @@ export async function HandleReceptiveWebhook(task: MetaWebhook) {
                     );
                 }
 
+                console.log(`REPOSTA DO AGENTE: ${mensagemAnswer}`)
+
                 sendBodyToMenssage( // Envia para growth como mensagem normal
                     idMensagem,
                     numeroDoContato,
