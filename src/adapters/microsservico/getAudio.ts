@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const URL_DEFAULT_MICROSSERVICE = "https://gamefic-growth.egnehl.easypanel.host"
+
 export async function getAudio(idAudio: string, MENSAGM_DEFAULT: string) {
     try {
-        const url = process.env.URL_MICROSERVICE ?? "https://gamefic-growth.egnehl.easypanel.host";
+        const url = process.env.URL_MICROSERVICE ?? URL_DEFAULT_MICROSSERVICE;
         const urlMicroService = `${url}/transcribe-audio`;
         const { data, status } = await axios.post(urlMicroService,
             {

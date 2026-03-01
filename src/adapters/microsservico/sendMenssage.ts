@@ -1,11 +1,13 @@
 import axios from "axios";
 
+const URL_DEFAULT_MICROSSERVICE = "https://gamefic-growth.egnehl.easypanel.host"
+
 export const sendMenssagem = async (props: { mensagem: string, idMensagem: string, numeroDoContato: string, phone_number_id: string }) => {
     try {
 
         console.log(`\n\n📢 Enviando mensagem para microserviço: ${props.mensagem} para o numero ${props.numeroDoContato}\n\n`)
 
-        const url = process.env.URL_MICROSERVICE ?? "https://gamefic-growth.egnehl.easypanel.host";
+        const url = process.env.URL_MICROSERVICE ?? URL_DEFAULT_MICROSSERVICE;
         const responseSend = await axios.post(`${url}/send-message`,
             {
                 "mensagem": props.mensagem,

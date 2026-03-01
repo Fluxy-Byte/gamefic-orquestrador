@@ -6,6 +6,9 @@ import { getWabaFilterWithPhoneNumber } from '../../infra/dataBase/waba';
 /**
  * Envia mensagem ao ADK e retorna a resposta em texto
  */
+
+const URL_DEFAULT = "https://gamefic-sdr.egnehl.easypanel.host"
+
 export async function getAnwser(
   mensagem: string,
   phone: string,
@@ -17,7 +20,7 @@ export async function getAnwser(
     const resultSession = await createSession(phone, metadados); // Criando sessão de usuário no ADK (ou reutilizando se já existir)
 
     const waba = await getWabaFilterWithPhoneNumber(metadados.phone_number_id)
-    const urlAgente = waba?.agent.url ?? "https://fluxe-sdr.egnehl.easypanel.host"
+    const urlAgente = waba?.agent.url ?? URL_DEFAULT
     const nameAgente = waba?.agent.name ?? "fluxy"
 
     const sessionOk =
@@ -82,7 +85,7 @@ export async function getAnwser(
 async function createSession(phone: string, metadados: Metadata) {
   try {
     const waba = await getWabaFilterWithPhoneNumber(metadados.phone_number_id)
-    const urlAgente = waba?.agent.url ?? "https://fluxe-sdr.egnehl.easypanel.host"
+    const urlAgente = waba?.agent.url ?? URL_DEFAULT
     const nameAgente = waba?.agent.name ?? "fluxy"
 
     console.log(urlAgente)

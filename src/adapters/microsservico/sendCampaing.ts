@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const URL_DEFAULT_MICROSSERVICE = "https://gamefic-growth.egnehl.easypanel.host"
+
 export const sendCampaing = async (body: any) => {
     try {
-        const url = process.env.URL_MICROSERVICE ?? "https://fluxe-fluxy-growth.egnehl.easypanel.host";
+        const url = process.env.URL_MICROSERVICE ?? URL_DEFAULT_MICROSSERVICE;
         const responseSend = await axios.post(`${url}/send-campaign`,
             body
         )
