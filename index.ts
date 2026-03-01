@@ -21,8 +21,8 @@ async function start() {
     console.log(e)
   } finally {
     routes.listen(PORT, () => {
-      console.log(`🚀 API rodando na porta http://localhost:${PORT} ou https://fluxe-orquestrador.egnehl.easypanel.host`);
-      console.log(`📚 Swagger em http://localhost:${PORT}/api/v1/docs ou https://fluxe-orquestrador.egnehl.easypanel.host/api/v1/docs`);
+      console.log(`🚀 API rodando na porta http://localhost:${PORT} ou https://gamefic-orquestrador.egnehl.easypanel.host`);
+      console.log(`📚 Swagger em http://localhost:${PORT}/api/v1/docs ou https://gamefic-orquestrador.egnehl.easypanel.host/api/v1/docs`);
     });
   }
 }

@@ -13,6 +13,10 @@ export const swaggerDocument: OpenAPIV3.Document = {
             url: "http://localhost:5202/api/v1",
             description: "Servidor Local",
         },
+        {
+            url: "https://gamefic-orquestrador.egnehl.easypanel.host/api/v1",
+            description: "Servidor Prod",
+        }
     ],
 
     tags: [
