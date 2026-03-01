@@ -173,9 +173,8 @@ routes.get("/api/v1/contacts-campaing", async (req: Request<ParamsContactsCampai
 routes.post("/api/v1/vendas", async (req: any, res: any) => {
     try {
         const bodyToCampaing: any = req.body;
-
-
-        if (!bodyToCampaing.name_template || !bodyToCampaing.phone || !bodyToCampaing.phoneNumberId || !bodyToCampaing.phoneSquadSales) {
+        
+        if (!bodyToCampaing.nameTemplate || !bodyToCampaing.phone || !bodyToCampaing.phoneNumberId || !bodyToCampaing.phoneSquadSales) {
             return res.status(401).json({
                 status: false,
                 message: "Erro ao inserir na fila de disparo pois esta faltando dados no corpo da req.",
