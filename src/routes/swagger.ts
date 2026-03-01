@@ -342,7 +342,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
         /* =======================
        WABA
     ======================= */
-        "/api/v1/waba": {
+        "/waba": {
             post: {
                 tags: ["WABA"],
                 summary: "Criar WABA",
@@ -423,7 +423,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
             }
         },
 
-        "/api/v1/list-wabas": {
+        "/list-wabas": {
             get: {
                 tags: ["WABA"],
                 summary: "Listar WABAs por organização",
@@ -444,7 +444,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
         /* =======================
    AGENT
 ======================= */
-        "/api/v1/agent": {
+        "/agent": {
             get: {
                 tags: ["Agent"],
                 summary: "Listar agentes",
