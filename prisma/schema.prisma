@@ -153,7 +153,7 @@ model ContatosCampanha {
 
 model LogContatoComAgente {
   id    Int    @id @default(autoincrement())
-  day   String  @unique
+  day   String
   id_contato Int
   id_agent Int
   id_waba Int
