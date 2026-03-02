@@ -73,8 +73,8 @@ export interface Contact {
   contactWabas?: ContactWaba[];
   contatosCampanha?: ContatosCampanha[];
   logContatoComAgente?: LogContatoComAgente[];
-  reunioes?: ReunioesContato[];
-  problemas?: ProblemasContato[];
+  reunioesContato?: ReunioesContato[];
+  problemasContato?: ProblemasContato[];
 }
 
 /* =====================================================

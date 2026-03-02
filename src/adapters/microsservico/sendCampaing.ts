@@ -8,7 +8,7 @@ export const sendCampaing = async (body: any) => {
         const responseSend = await axios.post(`${url}/send-campaign`,
             body
         )
-
+        console.log(responseSend)
         return {
             status: responseSend.status,
             data: JSON.stringify(responseSend.data)
