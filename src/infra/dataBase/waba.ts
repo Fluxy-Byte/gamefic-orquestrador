@@ -43,7 +43,16 @@ export async function getWabaFilterOrganization(organization_id: string) {
             id: true,
             phoneNumberId: true,
             agent: true,
-            logContatoComAgente: true
+            logContatoComAgente: true,
+            contactWabas: {
+                include: {
+                    contact: {
+                        include: {
+                            reunioesContato: true
+                        }
+                    }
+                }
+            }
         }
     })
 }
