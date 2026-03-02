@@ -38,10 +38,12 @@ export async function getWabaFilterOrganization(organization_id: string) {
         },
         select: {
             organizationId: true,
+            qtdContatos: true,
             displayPhoneNumber: true,
             id: true,
             phoneNumberId: true,
-            agent: true
+            agent: true,
+            logContatoComAgente: true
         }
     })
 }
@@ -69,6 +71,8 @@ export async function getWabaFilterWithId(id: number) {
         },
         include: {
             agent: true,
+            logContatoComAgente: true,
+            campanha: true,
             contactWabas: {
                 include: {
                     contact: true
