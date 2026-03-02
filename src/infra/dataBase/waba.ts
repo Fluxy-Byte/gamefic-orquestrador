@@ -32,29 +32,32 @@ export async function getAllWaba() {
 }
 
 export async function getWabaFilterOrganization(organization_id: string) {
-    return await prisma.waba.findMany({
-        where: {
-            organizationId: organization_id
-        },
+  return await prisma.waba.findMany({
+    where: {
+      organizationId: organization_id,
+    },
+    select: {
+      id: true,
+      organizationId: true,
+      qtdContatos: true,
+      displayPhoneNumber: true,
+      phoneNumberId: true,
+      agent: true,
+
+      logContatoComAgente: true,
+
+      contactWabas: {
         select: {
-            organizationId: true,
-            qtdContatos: true,
-            displayPhoneNumber: true,
-            id: true,
-            phoneNumberId: true,
-            agent: true,
-            logContatoComAgente: true,
-            contactWabas: {
-                include: {
-                    contact: {
-                        include: {
-                            reunioesContato: true
-                        }
-                    }
-                }
-            }
-        }
-    })
+          id: true,
+          contact: {
+            select: {
+              reunioesContato: true,
+            },
+          },
+        },
+      },
+    },
+  })
 }
 
 export async function getWabaFilterWithPhoneNumber(phone_number_id: string) {
