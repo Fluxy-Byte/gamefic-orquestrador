@@ -114,6 +114,7 @@ export async function startTaskWorkerCampaign() {
 
         const result = await sendCampaing({
           phone_number_id: bodyCampaign.phone_number_id,
+          category: "marketing",
           payload: dataToSend
         });
 

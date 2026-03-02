@@ -49,8 +49,9 @@ export async function startTaskWorkerVendas() {
       if (bodyVendas.nameTemplate == "chegou_mais_um_lead") {
 
         bodyPayload = {
-          "phone_number_id": bodyVendas.phoneNumberId,
-          "payload": {
+          phone_number_id: bodyVendas.phoneNumberId,
+          category: "marketing",
+          payload: {
             messaging_product: "whatsapp",
             to: bodyVendas.phoneSquadSales,
             type: "template",
@@ -79,8 +80,10 @@ export async function startTaskWorkerVendas() {
         }
       }
 
-      let result = await sendCampaing(bodyPayload);
-      console.log("Resposta do microsserviço de envio: " + JSON.stringify(result.data));
+      if (bodyPayload) {
+        let result = await sendCampaing(bodyPayload);
+        console.log("Resposta do microsserviço de envio: " + JSON.stringify(result.data));
+      }
       
       if (waba) {
         criarHistoricoDeConversa(
