@@ -1,7 +1,7 @@
 // Onde o worker executa
 
 import { getConectionTheChannel } from '../../infra/rabbitMQ/conection';
-import { sendCampaing } from "../../adapters/microsservico/sendCampaing";
+import { sendCampaing, sendCampaingMeta } from "../../adapters/microsservico/sendCampaing";
 import { criarHistoricoDeConversa } from "../../infra/dataBase/messages";
 import { getWabaFilterWithPhoneNumber } from '../../infra/dataBase/waba';
 import { createCampanha, updateNumberSendCampaing, updateNumberFailedCampaing } from "../../infra/dataBase/campanhas";
@@ -115,12 +115,11 @@ export async function startTaskWorkerCampaign() {
           }
         };
 
-        const result = await sendCampaing({
-          phone_number_id: bodyCampaign.phone_number_id,
-          category: "marketing",
-          payload: dataToSend
-        });
-
+        const result = await sendCampaingMeta(
+          "marketing",
+          bodyCampaign.phone_number_id,
+          dataToSend
+        );
 
         let user = await getUserFilterWithPhoneAndWabaId(contact.phone, waba.id);
 
@@ -157,7 +156,7 @@ export async function startTaskWorkerCampaign() {
           waba.agentId,
           'template',
           bodyCampaign.payload.template_name,
-          'oi',
+          'Chamando Tamplate Ativo',
           String(new Date()),
           'enviado'
         );
