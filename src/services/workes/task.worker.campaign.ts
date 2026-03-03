@@ -27,6 +27,7 @@ export interface ModelCamping {
   name_campanha: string
   phone_number_id: string
   id_organizacao: string
+  category: string
 }
 
 export async function startTaskWorkerCampaign() {
@@ -116,7 +117,7 @@ export async function startTaskWorkerCampaign() {
         };
 
         const result = await sendCampaingMeta(
-          "marketing",
+          bodyCampaign.category,
           bodyCampaign.phone_number_id,
           dataToSend
         );
