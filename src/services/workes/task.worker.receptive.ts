@@ -3,7 +3,7 @@ import { getConectionTheChannel } from '../../infra/rabbitMQ/conection';
 import type { MetaWebhook, Answer } from '../interfaces/Meta.interface';
 import { getWabaFilterWithPhoneNumber } from '../../infra/dataBase/waba';
 import { getContactLog, createContactLog } from '../../infra/dataBase/logContatoComAgente';
-import { getUserFilterWithPhoneAndWabaId, updateDateLastMessage, createUser } from '../../infra/dataBase/contacts';
+import { getUserFilterWithPhoneAndWabaId, updateDateLastMessage, createUser, updateContact } from '../../infra/dataBase/contacts';
 
 export async function startTaskWorkerReceptive() {
     const channel = getConectionTheChannel()
@@ -53,11 +53,11 @@ export async function startTaskWorkerReceptive() {
 
                     const day = getDataAtualFormatada()
                     const searchLog = await getContactLog(contato.id, waba.agentId, waba.id, day);
-                    
+
                     if (!searchLog) {
                         createContactLog(contato.id, waba.agentId, waba.id, day);
                     }
-                    
+
                     updateDateLastMessage(numeroDoContato)
 
                     criarHistoricoDeConversa(

@@ -6,24 +6,27 @@ import { criarHistoricoDeConversa } from "../../infra/dataBase/messages";
 import { getWabaFilterWithPhoneNumber } from '../../infra/dataBase/waba';
 import { createCampanha, updateNumberSendCampaing, updateNumberFailedCampaing } from "../../infra/dataBase/campanhas";
 import { createContatosCampanha } from "../../infra/dataBase/contatosCampanha";
-import { createUser, getUserFilterWithPhoneAndWabaId } from "../../infra/dataBase/contacts";
+import { createUser, getUserFilterWithPhoneAndWabaId, updateContact } from "../../infra/dataBase/contacts";
 
 interface PhoneUser {
-  "phone": string,
-  "parametersHeader": [],
-  "parametersBody": []
+  phone: string,
+  email?: string;
+  name?: string;
+  empresa?: string;
+  parametersHeader: [],
+  parametersBody: []
 }
 
 export interface ModelCamping {
-  "payload": {
-    "numbers": PhoneUser[],
-    "template_name": string,
-    "language": string
-    "type": string
+  payload: {
+    numbers: PhoneUser[],
+    template_name: string,
+    language: string
+    type: string
   },
-  "name_campanha": string
-  "phone_number_id": string
-  "id_organizacao": string
+  name_campanha: string
+  phone_number_id: string
+  id_organizacao: string
 }
 
 export async function startTaskWorkerCampaign() {
@@ -125,8 +128,18 @@ export async function startTaskWorkerCampaign() {
           user = await createUser(contact.phone, waba.id);
         }
 
+        let dadosParaUpdateContact: Record<string, string> = {}
+
+        if (contact.email && contact.email != user.email) dadosParaUpdateContact["email"] = contact.email;
+        if (contact.empresa && contact.empresa != user.empresa) dadosParaUpdateContact["empresa"] = contact.empresa;
+        if (contact.name && contact.name != user.name) dadosParaUpdateContact["name"] = contact.name;
+
+        if (Object.keys(dadosParaUpdateContact).length > 0) {
+          await updateContact(user.phone, dadosParaUpdateContact)
+        }
+
         const dados = {
-          status: result.status == 200 ? "enviado" : "erro",
+          status: result.status == 200 ? "Enviado" : "Falha",
           body_retorno: JSON.stringify(result),
           id_campanha: campaign.id,
           id_contato: user.id,
