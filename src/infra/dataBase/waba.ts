@@ -1,12 +1,13 @@
 import { prisma } from '../../lib/prisma'
 
-export async function createWaba(phoneNumberId: string, displayPhoneNumber: string, organizationId: string, agentId: number) {
+export async function createWaba(phoneNumberId: string, displayPhoneNumber: string, organizationId: string, agentId: number, id_waba_meta: string) {
     return await prisma.waba.create({
         data: {
             phoneNumberId,
             displayPhoneNumber,
             organizationId,
             agentId,
+            id_waba_meta
         },
         include: {
             agent: true,
@@ -98,13 +99,15 @@ interface UpdateWaba {
     agentId: number,
     displayPhoneNumber?: string,
     organizationId?: string,
-    phoneNumberId?: string
+    phoneNumberId?: string,
+    id_waba_meta?: string
+
 }
 
 export async function updateWaba(phone_number_id: string, dados: UpdateWaba) {
     return await prisma.waba.update({
         where: {
-            phoneNumberId: phone_number_id,
+            phoneNumberId: phone_number_id
         },
         data: dados
     })

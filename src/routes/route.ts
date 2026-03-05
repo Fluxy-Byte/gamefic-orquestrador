@@ -541,16 +541,18 @@ routes.post("/api/v1/rdcrm", async (req, res) => {
 
 routes.post("/api/v1/waba", async (req, res) => {
     try {
-        const { phone_number_id, display_phone_number, idOrganization, idAgente } = req.body;
+        const { phone_number_id, display_phone_number, idOrganization, idAgente, id_waba_meta } = req.body;
 
         if (!phone_number_id ||
             !display_phone_number ||
             !idOrganization ||
             !idAgente ||
+            !id_waba_meta ||
             typeof phone_number_id != "string" ||
             typeof display_phone_number != "string" ||
             typeof idOrganization != "string" ||
-            typeof idAgente != "number"
+            typeof idAgente != "number" ||
+            typeof id_waba_meta != "string"
         ) {
             return res.status(400).json({
                 status: false,
@@ -559,7 +561,7 @@ routes.post("/api/v1/waba", async (req, res) => {
             })
         }
 
-        const result = await createWaba(phone_number_id, display_phone_number, idOrganization, idAgente);
+        const result = await createWaba(phone_number_id, display_phone_number, idOrganization, idAgente, id_waba_meta);
 
         return res.status(result ? 200 : 400).json({
             status: result ? true : false,
@@ -648,7 +650,7 @@ routes.get("/api/v1/list-wabas", async (req: Request<WabaQueryWhitOrganization>,
 
 routes.put("/api/v1/waba", async (req: Request<WabaQuery>, res) => {
     try {
-        const { agentId, displayPhoneNumber, organizationId } = req.body;
+        const { agentId, displayPhoneNumber, organizationId, id_waba_meta } = req.body;
         const { phone_number_id } = req.query;
 
         if (!phone_number_id ||
@@ -661,7 +663,7 @@ routes.put("/api/v1/waba", async (req: Request<WabaQuery>, res) => {
             })
         }
 
-        const result = await updateWaba(phone_number_id, { agentId, displayPhoneNumber, organizationId, phoneNumberId: phone_number_id });
+        const result = await updateWaba(phone_number_id, { agentId, displayPhoneNumber, organizationId, phoneNumberId: phone_number_id, id_waba_meta });
 
         return res.status(result ? 200 : 400).json({
             status: result ? true : false,

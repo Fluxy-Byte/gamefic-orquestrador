@@ -44,6 +44,8 @@ model Waba {
   phoneNumberId       String @unique
   displayPhoneNumber  String @unique
 
+  id_waba_meta        String?
+
   qtdContatos         Int?   @default(0)
   qtdConversao        Int?   @default(0)
 
