@@ -23,6 +23,7 @@ import {
 import { rdStationGet, rdStationPost } from "../infra/dataBase/rdstation";
 import { createWaba, getAllWaba, getWabaFilterOrganization, getWabaFilterWithPhoneNumber, updateWaba } from "../infra/dataBase/waba";
 import { createAgent, getAgentFilterWithId, getAllAgent, updateAgente, getAgentFilterWithOrganizationId } from "../infra/dataBase/agent";
+import { getTemplates } from "../adapters/meta/templates";
 import { getCampanhas } from "../infra/dataBase/campanhas";
 import { getContatosCampanha } from "../infra/dataBase/contatosCampanha";
 import { swaggerDocument } from "../routes/swagger"
@@ -173,7 +174,7 @@ routes.get("/api/v1/contacts-campaing", async (req: Request<ParamsContactsCampai
 routes.post("/api/v1/vendas", async (req: any, res: any) => {
     try {
         const bodyToCampaing: any = req.body;
-        
+
         if (!bodyToCampaing.nameTemplate || !bodyToCampaing.phone || !bodyToCampaing.phoneNumberId || !bodyToCampaing.phoneSquadSales) {
             return res.status(401).json({
                 status: false,
@@ -788,6 +789,22 @@ routes.put("/api/v1/agent", async (req: Request<AgentQuery>, res) => {
         return res.status(500).json({
             status: false,
             agent: null,
+            mensagem: "Erro interno no servidor"
+        })
+    }
+})
+
+
+routes.get("/api/v1/templates", async (req, res) => {           // Coletar templates do waba
+    try {
+        const result = await getTemplates();
+        return res.status(result.status).json(result)
+
+    } catch (e: any) {
+        console.error(e)
+        return res.status(500).json({
+            status: false,
+            waba: null,
             mensagem: "Erro interno no servidor"
         })
     }
