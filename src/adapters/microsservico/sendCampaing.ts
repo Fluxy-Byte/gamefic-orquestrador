@@ -33,7 +33,7 @@ export const sendCampaing = async (body: DadosPayload) => {
 
 export const sendCampaingMeta = async (category: string, phone_number_id: string, payload: any) => {
     try {
-        let type_message = category == "marketing" ? "marketing_messages" : "messages"
+        let type_message = category == "MARKETING" ? "marketing_messages" : "messages"
         const url = `https://graph.facebook.com/v22.0/${phone_number_id}/${type_message}`
         const { data, status } = await axios.post(
             url,
