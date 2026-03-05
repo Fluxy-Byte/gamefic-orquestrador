@@ -7,9 +7,8 @@ const VERSAO_META = process.env.VERSAO_META;
 export const getTemplates = async () => {
     try {
         const url = `https://graph.facebook.com/${VERSAO_META}/${ID_WABA}/message_templates`
-        const { data, status } = await axios.post(
+        const { data, status } = await axios.get(
             url,
-            {},
             {
                 headers: {
                     "Authorization": `Bearer ${TOKEN_META}`,
