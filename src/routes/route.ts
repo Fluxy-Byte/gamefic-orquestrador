@@ -796,17 +796,42 @@ routes.put("/api/v1/agent", async (req: Request<AgentQuery>, res) => {
     }
 })
 
+type TemplateQuery = {
+    phoneNumberId?: string
+}
 
-routes.get("/api/v1/templates", async (req, res) => {           // Coletar templates do waba
+routes.get("/api/v1/templates", async (req: Request<TemplateQuery>, res) => {           // Coletar templates do waba
     try {
-        const result = await getTemplates();
+        const { phoneNumberId } = req.query;
+
+        if (!phoneNumberId ||
+            typeof phoneNumberId != "string"
+        ) {
+            return res.status(400).json({
+                status: false,
+                templates: null,
+                mensagem: "Necessario revisar os dados necessário no seu body da requisição. Campo esperado e tipo do valor: phoneNumberId = string"
+            })
+        }
+
+        const waba = await getWabaFilterWithPhoneNumber(phoneNumberId);
+
+        if (!waba || !waba.id_waba_meta) {
+            return res.status(400).json({
+                status: false,
+                templates: null,
+                mensagem: "Waba não encontrado ou o WABA esta faltando WABA ID na base, necessario adicionar essa informação na parte de configuração dos WABAS"
+            })
+        }
+
+        const result = await getTemplates(waba.id_waba_meta);
         return res.status(result.status).json(result)
 
     } catch (e: any) {
         console.error(e)
         return res.status(500).json({
             status: false,
-            waba: null,
+            templates: [],
             mensagem: "Erro interno no servidor"
         })
     }

@@ -4,9 +4,9 @@ const TOKEN_META = process.env.TOKEN_META;
 const ID_WABA = process.env.ID_WABA;
 const VERSAO_META = process.env.VERSAO_META;
 
-export const getTemplates = async () => {
+export const getTemplates = async (idWaba: string) => {
     try {
-        const url = `https://graph.facebook.com/${VERSAO_META}/${ID_WABA}/message_templates`
+        const url = `https://graph.facebook.com/${VERSAO_META}/${idWaba ?? ID_WABA}/message_templates`
         const { data, status } = await axios.get(
             url,
             {
