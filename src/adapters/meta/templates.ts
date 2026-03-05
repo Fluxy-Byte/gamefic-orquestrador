@@ -34,6 +34,45 @@ export const getTemplates = async (idWaba: string) => {
 const mock = {
     "data": [
         {
+            "name": "2023_april_promo",
+            "components": [
+                {
+                    "type": "HEADER",
+                    "format": "TEXT",
+                    "text": "Fall Sale"
+                },
+                {
+                    "type": "BODY",
+                    "text": "Hi {{1}}, our Fall Sale is on! Use promo code {{2}} Get an extra 25% off every order above $350!",
+                    "example": {
+                        "body_text": [
+                            [
+                                "Mark",
+                                "FALL25"
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "type": "FOOTER",
+                    "text": "Not interested in any of our sales? Tap Stop Promotions"
+                },
+                {
+                    "type": "BUTTONS",
+                    "buttons": [
+                        {
+                            "type": "QUICK_REPLY",
+                            "text": "Stop promotions"
+                        }
+                    ]
+                }
+            ],
+            "language": "en_US",
+            "status": "REJECTED",
+            "category": "MARKETING",
+            "id": "920070352646140"
+        },
+        {
             "name": "hello_world",
             "previous_category": "ACCOUNT_UPDATE",
             "components": [

@@ -809,7 +809,7 @@ routes.get("/api/v1/templates", async (req: Request<TemplateQuery>, res) => {   
         ) {
             return res.status(400).json({
                 status: false,
-                templates: null,
+                templates: [],
                 mensagem: "Necessario revisar os dados necessário no seu body da requisição. Campo esperado e tipo do valor: phoneNumberId = string"
             })
         }
@@ -819,7 +819,7 @@ routes.get("/api/v1/templates", async (req: Request<TemplateQuery>, res) => {   
         if (!waba || !waba.id_waba_meta) {
             return res.status(400).json({
                 status: false,
-                templates: null,
+                templates: [],
                 mensagem: "Waba não encontrado ou o WABA esta faltando WABA ID na base, necessario adicionar essa informação na parte de configuração dos WABAS"
             })
         }
