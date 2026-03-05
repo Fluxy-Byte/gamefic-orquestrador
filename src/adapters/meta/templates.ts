@@ -9,6 +9,7 @@ export const getTemplates = async () => {
         const url = `https://graph.facebook.com/${VERSAO_META}/${ID_WABA}/message_templates`
         const { data, status } = await axios.post(
             url,
+            {},
             {
                 headers: {
                     "Authorization": `Bearer ${TOKEN_META}`,
