@@ -69,7 +69,7 @@ export async function startTaskWorkerVendas() {
                   "parameters": [
                     {
                       "type": "text",
-                      "text": bodyVendas.nameTemplate
+                      "text": user.name ? user.name : "Cliente"
                     }
                   ]
                 }
@@ -84,7 +84,7 @@ export async function startTaskWorkerVendas() {
         let result = await sendCampaing(bodyPayload);
         console.log("Resposta do microsserviço de envio: " + JSON.stringify(result.data));
       }
-      
+
       if (waba) {
         criarHistoricoDeConversa(
           user.id,
