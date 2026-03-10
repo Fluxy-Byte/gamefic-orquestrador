@@ -36,7 +36,8 @@ async function salvarOuAtualizarToken(dados: RDCRM) {
         update: {
             access_token: dados.access_token,
             expires_in: dados.expires_in,
-            token_type: dados.token_type
+            token_type: dados.token_type,
+            refresh_token: dados.refresh_token
         },
         create: {
             name: dados.name,
