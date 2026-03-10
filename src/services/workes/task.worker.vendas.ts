@@ -44,6 +44,8 @@ export async function startTaskWorkerVendas() {
         user = await createUser(bodyVendas.phone, waba?.id ?? 1);
       }
 
+     
+
       let bodyPayload;
 
       if (bodyVendas.nameTemplate == "chegou_mais_um_lead") {

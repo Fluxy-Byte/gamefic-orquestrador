@@ -28,6 +28,8 @@ export async function createUser(phone: string, wabaId: number) { // Criando com
             },
         },
         include: {
+            problemasContato: true,
+            reunioesContato: true,
             contactWabas: {
                 include: { waba: true },
             },
