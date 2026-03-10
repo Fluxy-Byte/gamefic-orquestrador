@@ -34,10 +34,13 @@ async function salvarOuAtualizarToken(dados: RDCRM) {
             name: dados.name
         },
         update: {
+            name: dados.name,
             access_token: dados.access_token,
             expires_in: dados.expires_in,
+            refresh_token: dados.refresh_token,
             token_type: dados.token_type,
-            refresh_token: dados.refresh_token
+            expires_at: dados.expires_at
+
         },
         create: {
             name: dados.name,
