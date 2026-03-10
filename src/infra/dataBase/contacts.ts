@@ -6,6 +6,8 @@ export async function getUserFilterWithPhone(phone: string) {  // Filtrando com 
     return await prisma.contact.findFirst({
         where: { phone },
         include: {
+            reunioesContato: true,
+            problemasContato: true,
             contactWabas: {
                 include: { waba: true },
             },
