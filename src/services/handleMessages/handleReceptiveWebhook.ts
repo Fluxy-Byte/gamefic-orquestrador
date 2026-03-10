@@ -164,7 +164,7 @@ async function tratarMensagensDeButton(dados: Message, numeroDoContato: string, 
 async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, consultaResposta: string, phone_number_id: string) {
     try {
 
-        const listaDeRespostas = await splitText(consultaResposta);
+        const listaDeRespostas = await quebrarMensagem(consultaResposta);
 
         for (const mensagem of listaDeRespostas) {
 
@@ -182,17 +182,28 @@ async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, c
     }
 }
 
-async function splitText(text: string, limit = 1100) {
-    const parts = []
-    let current = ""
-    for (const word of text.split(" ")) {
-        if ((current + " " + word).length > limit) {
-            parts.push(current)
-            current = word
+function quebrarMensagem(texto: string, limite = 800): string[] {
+    const textoFormatado = texto.replace(/\*\*/g, "*");
+
+    const frases = textoFormatado.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+
+    const mensagens: string[] = [];
+    let atual = "";
+
+    for (const frase of frases) {
+        const limpa = frase.trim();
+
+        if ((atual + " " + limpa).length > limite) {
+            mensagens.push(atual.trim());
+            atual = limpa;
         } else {
-            current += (current ? " " : "") + word
+            atual += " " + limpa;
         }
     }
-    if (current) parts.push(current)
-    return parts
+
+    if (atual.trim()) {
+        mensagens.push(atual.trim());
+    }
+
+    return mensagens;
 }
