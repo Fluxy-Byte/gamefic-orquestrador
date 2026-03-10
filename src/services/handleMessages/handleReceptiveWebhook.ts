@@ -164,7 +164,7 @@ async function tratarMensagensDeButton(dados: Message, numeroDoContato: string, 
 async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, consultaResposta: string, phone_number_id: string) {
     try {
 
-        const listaDeRespostas = await quebrarMensagem(consultaResposta);
+        const listaDeRespostas = await processarMensagem(consultaResposta);
 
         for (const mensagem of listaDeRespostas) {
 
@@ -175,35 +175,17 @@ async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, c
                 phone_number_id
             })
 
-            await new Promise(r => setTimeout(r, 20000))
+            await new Promise(r => setTimeout(r, 2000))
         }
     } catch (e: any) {
         console.log("Erro ao enviar mensagem: " + e)
     }
 }
 
-function quebrarMensagem(texto: string, limite = 800): string[] {
-    const textoFormatado = texto.replace(/\*\*/g, "*");
-
-    const frases = textoFormatado.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
-
-    const mensagens: string[] = [];
-    let atual = "";
-
-    for (const frase of frases) {
-        const limpa = frase.trim();
-
-        if ((atual + " " + limpa).length > limite) {
-            mensagens.push(atual.trim());
-            atual = limpa;
-        } else {
-            atual += " " + limpa;
-        }
-    }
-
-    if (atual.trim()) {
-        mensagens.push(atual.trim());
-    }
-
-    return mensagens;
+async function processarMensagem(texto: string){
+    return texto
+        .replace(/\*\*/g, "*") // troca ** por *
+        .split("[QB]") // separa mensagens
+        .map(msg => msg.trim()) // remove espaços extras
+        .filter(msg => msg.length > 0); // remove vazios
 }
