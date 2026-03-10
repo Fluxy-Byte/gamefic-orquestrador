@@ -182,7 +182,7 @@ async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, c
     }
 }
 
-async function splitText(text: string, limit = 2800) {
+async function splitText(text: string, limit = 1100) {
     const parts = []
     let current = ""
     for (const word of text.split(" ")) {
