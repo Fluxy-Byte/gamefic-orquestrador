@@ -1,7 +1,7 @@
 import { MetaWebhook, Metadata, Answer, Message } from '../interfaces/Meta.interface';
 import { createTaskReceptive } from "../producers/task.producer.receptive";
 import { getAudio } from "../../adapters/microsservico/getAudio";
-import { sendMenssagem } from "../../adapters/microsservico/sendMenssage";
+import { sendMenssagemMeta } from "../../adapters/microsservico/sendMenssage";
 import { getAnwser } from "../../adapters/tools/getAnwser";
 
 interface ReseultGetAudio {
@@ -161,18 +161,18 @@ async function tratarMensagensDeButton(dados: Message, numeroDoContato: string, 
 }
 
 
-async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, consultaResposta: string, phone_number_id: string) {
+async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, consultaResposta: string, phoneNumberId: string) {
     try {
 
         const listaDeRespostas = await processarMensagem(consultaResposta);
 
         for (const mensagem of listaDeRespostas) {
 
-            sendMenssagem({
+            sendMenssagemMeta({
                 mensagem,
                 idMensagem,
                 numeroDoContato,
-                phone_number_id
+                phoneNumberId
             })
 
             await new Promise(r => setTimeout(r, 2000))
