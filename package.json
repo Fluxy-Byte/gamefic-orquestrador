@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@google/adk": "^0.3.0",
+    "@google/generative-ai": "^0.24.1",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "amqplib": "^0.10.9",

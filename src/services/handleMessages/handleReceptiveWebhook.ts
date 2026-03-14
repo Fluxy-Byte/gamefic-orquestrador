@@ -1,6 +1,6 @@
 import { MetaWebhook, Metadata, Answer, Message } from '../interfaces/Meta.interface';
 import { createTaskReceptive } from "../producers/task.producer.receptive";
-import { getAudio } from "../../adapters/microsservico/getAudio";
+import { transcreverAudioWhatsApp } from "../../adapters/microsservico/getAudio";
 import { sendMenssagemMeta } from "../../adapters/microsservico/sendMenssage";
 import { getAnwser } from "../../adapters/tools/getAnwser";
 
@@ -92,10 +92,10 @@ async function tratarMensagensDeAudio(dados: Message, numeroDoContato: string, M
         let result = "Não foi possivel trancrever o audio";
 
         if (urlAudio && idAudio) {
-            const resultgGetAudio: ReseultGetAudio = await getAudio(idAudio, MENSAGM_DEFAULT);
+            const resultgGetAudio: string = await transcreverAudioWhatsApp(idAudio, MENSAGM_DEFAULT);
 
-            if (resultgGetAudio.status && resultgGetAudio.data) {
-                result = resultgGetAudio.data
+            if (resultgGetAudio) {
+                result = resultgGetAudio
                 mensagem = await getAnwser(result, numeroDoContato, MENSAGM_DEFAULT, metadados);
             }
         }
@@ -182,7 +182,7 @@ async function sendBodyToMenssage(idMensagem: string, numeroDoContato: string, c
     }
 }
 
-async function processarMensagem(texto: string){
+async function processarMensagem(texto: string) {
     return texto
         .replace(/\*\*/g, "*") // troca ** por *
         .split("[QB]") // separa mensagens
